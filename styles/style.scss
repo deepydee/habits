@@ -92,6 +92,7 @@ body {
     margin: 0;
     padding: 0;
     font-size: 30px;
+    transition: .6s;
   }
 }
 
@@ -129,7 +130,7 @@ body {
       &::-webkit-progress-value {
         border-radius: 4px;
         background-color: #111196;
-        transition: .4s;
+        transition: .8s;
       }
     }
   }
