@@ -1,6 +1,6 @@
 'use strict';
 
-let habbits = [];
+let habits = [];
 const HABBIT_KEY = 'HABBIT_KEY';
 
 const page = {
@@ -13,25 +13,25 @@ const page = {
       bar: document.querySelector('.progress__bar'),
     }
   },
+  content: {
+    main: document.querySelector('.main'),
+    habitWrapper: document.querySelector('.habit__wrapper'),
+  },
 };
 
 const loadData = () => {
-  const habbitString = localStorage.getItem(HABBIT_KEY);
-  const habbitArray = JSON.parse(habbitString);
+  const habitString = localStorage.getItem(HABBIT_KEY);
+  const habitArray = JSON.parse(habitString);
 
-  if (Array.isArray(habbitArray)) {
-    habbits = habbitArray;
+  if (Array.isArray(habitArray)) {
+    habits = habitArray;
   }
 };
 
-const saveData = () => localStorage.setItem(HABBIT_KEY, JSON.stringify(habbits));
+const saveData = () => localStorage.setItem(HABBIT_KEY, JSON.stringify(habits));
 
 const renderMenu = (activeHabit) => {
-  if (!activeHabit) {
-    return;
-  }
-
-  for (const habit of habbits) {
+  for (const habit of habits) {
     const existed = document.querySelector(`[data-habit-id="${habit.id}"]`);
 
     if (!existed) {
@@ -59,10 +59,6 @@ const renderMenu = (activeHabit) => {
 };
 
 const renderHead = (activeHabit) => {
-  if (!activeHabit) {
-    return;
-  }
-
   const progress = activeHabit.days.length / activeHabit.target > 1
     ? 1
     : activeHabit.days.length / activeHabit.target;
@@ -75,20 +71,46 @@ const renderHead = (activeHabit) => {
   page.header.progress.bar.value = progressInPercent;
 };
 
+const renderContent = (activeHabit) => {
+  page.content.habitWrapper.innerHTML = '';
+
+  activeHabit.days.forEach((day, idx) => {
+    const element = document.createElement('div');
+    element.classList.add('habit');
+    element.innerHTML = `<div class="habit__day">День ${idx + 1}</div>
+    <div class="habit__comment">${day.comment}</div>
+    <button class="delete"><img src="./images/delete.svg" alt="Удалить день ${idx + 1}"></button>`;
+
+    page.content.habitWrapper.append(element);
+  });
+
+  const commentForm = `<div class="habit">
+  <div class="habit__day">День ${activeHabit.days.length + 1}</div>
+    <form class="habit__comment" action="#!">
+      <input class="input__comment" type="text" placeholder="Комментарий...">
+    </form>
+  <button class="btn__submit" type="submit">Готово</button>
+  </div>`;
+
+  page.content.habitWrapper.insertAdjacentHTML('beforeend', commentForm);
+};
+
 const rerender = (activeHabitId) => {
-  const activeHabit = habbits
+  const activeHabit = habits
     .find(habit => +habit.id === +activeHabitId);
+
+  if (!activeHabit) {
+    return;
+  }
 
   renderMenu(activeHabit);
   renderHead(activeHabit);
+  renderContent(activeHabit);
 };
-
-
-
 
 (() => {
   loadData();
-  rerender(habbits[0].id);
+  rerender(habits[0].id);
 })();
 
 page.menu.addEventListener('click', (e) => {
